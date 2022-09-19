@@ -1,0 +1,6 @@
+/.vs/
+/GrpcHelloWorldClient/bin/
+/GrpcHelloWorldClient/obj/
+/GrpcHelloWorldServer/bin/
+/GrpcHelloWorldServer/obj/
+
