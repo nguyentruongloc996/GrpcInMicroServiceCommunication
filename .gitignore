@@ -3,4 +3,7 @@
 /GrpcHelloWorldClient/obj/
 /GrpcHelloWorldServer/bin/
 /GrpcHelloWorldServer/obj/
-
+/GrpcGreeter/bin/
+/GrpcGreeter/obj/
+/GrpcGreeterClient/bin/
+/GrpcGreeterClient/obj/
