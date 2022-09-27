@@ -1,0 +1,12 @@
+/GrpcHelloWorld/.vs/
+/GrpcHelloWorld/GrpcGreeter/bin/
+/GrpcHelloWorld/GrpcGreeter/obj/
+/GrpcHelloWorld/GrpcGreeterClient/bin/
+/GrpcHelloWorld/GrpcGreeterClient/obj/
+/GrpcHelloWorld/GrpcHelloWorldClient/bin/
+/GrpcHelloWorld/GrpcHelloWorldClient/obj/
+/GrpcHelloWorld/GrpcHelloWorldServer/bin/
+/GrpcHelloWorld/GrpcHelloWorldServer/obj/
+/GrpcMicroservices/.vs/
+/GrpcMicroservices/ProductGrpc/bin/
+/GrpcMicroservices/ProductGrpc/obj/
