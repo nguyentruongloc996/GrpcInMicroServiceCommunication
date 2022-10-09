@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProductGrpc.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +14,20 @@ namespace ProductGrpc
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            SeedDatabase(host);
+            host.Run();
+        }
+
+        private static void SeedDatabase(IHost host)
+        {
+            // get scope service by using DI
+            // a scoped lifetime indicates that services are created once per client request (connection) 
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var productContext = services.GetRequiredService<ProductsContext>();
+
+            ProductContextSeed.SeedAsync(productContext);
         }
 
         // Additional configuration is required to successfully run gRPC on macOS.
