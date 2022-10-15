@@ -10,4 +10,6 @@
 /GrpcMicroservices/.vs/
 /GrpcMicroservices/ProductGrpc/bin/
 /GrpcMicroservices/ProductGrpc/obj/
+/GrpcMicroservices/ProductGrpcClient/bin/
+/GrpcMicroservices/ProductGrpcClient/obj/
 .vs/

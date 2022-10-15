@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ProductGrpcClient": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
