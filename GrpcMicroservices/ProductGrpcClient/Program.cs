@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
 using ProductGrpc.Protos;
 using System;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace ProductGrpcClient
             var client = new ProductProtoService.ProductProtoServiceClient(channel);
             
             //await GetProductAsync(1, client);
-            await GetAllProductAsync(client);
+            //await GetAllProductAsync(client);
+            await GetAllProductAsyncWithCSharp9(client);
 
             Console.ReadKey();
         }
@@ -47,6 +49,18 @@ namespace ProductGrpcClient
                     var currentProductModel = stream.Current;
                     Console.WriteLine("Product: " + currentProductModel.ToString());
                 }
+            }
+        }
+
+        static async Task GetAllProductAsyncWithCSharp9(ProductProtoServiceClient client)
+        {
+            // GetProductAsync
+            Console.WriteLine("GetAllProduct started...");
+
+            using var response = client.GetAllProduct(new GetAllProductRequest());
+            await foreach (var product in response.ResponseStream.ReadAllAsync())
+            {
+                Console.WriteLine("Product: " + product);
             }
         }
     }

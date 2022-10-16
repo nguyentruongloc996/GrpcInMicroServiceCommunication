@@ -55,8 +55,9 @@ namespace ProductGrpc.Services
 
             }
 
-            productList.ForEach(async product => await responseStream.WriteAsync(
-                new ProductModel
+            foreach (var product in productList)
+            {
+                var productModel = new ProductModel
                 {
                     ProductId = product.ProductId,
                     Name = product.Name,
@@ -64,8 +65,10 @@ namespace ProductGrpc.Services
                     Price = product.Price,
                     Status = ProductStatus.Instock,
                     CreatedTime = Timestamp.FromDateTime(product.CreateTime)
-                }
-            ));
+                };
+
+                await responseStream.WriteAsync(productModel);
+            }
         }
     }
 }
