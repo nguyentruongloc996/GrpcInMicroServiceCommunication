@@ -10,7 +10,7 @@ service ProductProtoService {
 	rpc GetAllProduct(GetAllProductRequest) returns (stream ProductModel);
 
 	rpc AddProduct(AddProductRequest) returns (ProductModel);
-	rpc UpdateProduct(AddProductRequest) returns (ProductModel);
+	rpc UpdateProduct(UpdateProductRequest) returns (ProductModel);
 	rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
 
 	rpc InsertBulkProduct (stream ProductModel) returns (InsertBulkProductResponse);

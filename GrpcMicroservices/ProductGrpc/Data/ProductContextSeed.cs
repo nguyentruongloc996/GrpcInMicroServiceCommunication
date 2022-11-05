@@ -20,7 +20,7 @@ namespace ProductGrpc.Data
                         Description = "New Xiaomi phone",
                         Price = 699,
                         Status = ProductStatus.INSTOCK,
-                        CreateTime = System.DateTime.UtcNow
+                        CreatedTime = System.DateTime.UtcNow
                     },
                     new Product
                     {
@@ -29,7 +29,7 @@ namespace ProductGrpc.Data
                         Description = "New Samsung phone",
                         Price = 400,
                         Status = ProductStatus.INSTOCK,
-                        CreateTime = System.DateTime.UtcNow
+                        CreatedTime = System.DateTime.UtcNow
                     },
                     new Product 
                     {
@@ -38,7 +38,7 @@ namespace ProductGrpc.Data
                         Description = "New Apple phone",
                         Price = 1000,
                         Status = ProductStatus.INSTOCK,
-                        CreateTime = System.DateTime.UtcNow
+                        CreatedTime = System.DateTime.UtcNow
                     }
                 };
 

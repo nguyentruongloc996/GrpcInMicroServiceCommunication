@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Grpc.Net.Client;
 using ProductGrpc.Protos;
 using System;
@@ -16,21 +17,106 @@ namespace ProductGrpcClient
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new ProductProtoService.ProductProtoServiceClient(channel);
             
-            //await GetProductAsync(1, client);
-            //await GetAllProductAsync(client);
+            await GetProductAsync(client, 1);
+            
+            await GetAllProductAsyncWithCSharp9(client);
+            await AddProductAsync(client);
+            await GetAllProductAsyncWithCSharp9(client);
+
+            await UpdateProductAsync(client);
+            await GetAllProductAsync(client);
+
+            await DeleteProductAsync(client, 3);
+            await GetAllProductAsync(client);
+
+            await InsertBulkProduct(client);
             await GetAllProductAsyncWithCSharp9(client);
 
             Console.ReadKey();
         }
 
-        static async Task GetProductAsync(int productId, ProductProtoServiceClient client)
+        private static async Task InsertBulkProduct(ProductProtoServiceClient client)
+        {
+            Console.WriteLine("InsertBulkProduct stared...");
+
+            using var clientBulk = client.InsertBulkProduct();
+
+            for (int i = 0; i < 3; i++)
+            {
+                var productModel = new ProductModel
+                {
+                    Name = $"Product{i}",
+                    Description = " Bulk inserted product",
+                    Price = 399,
+                    Status = ProductStatus.Instock,
+                    CreatedTime = Timestamp.FromDateTime(DateTime.UtcNow)
+                };
+
+                await clientBulk.RequestStream.WriteAsync(productModel);
+            }
+
+            await clientBulk.RequestStream.CompleteAsync();
+
+            var responseBulk = await clientBulk;
+            Console.WriteLine($"Status: {responseBulk.Success}. Insert Count: {responseBulk.InsertCount}");
+        }
+
+        private static async Task DeleteProductAsync(ProductProtoServiceClient client, int productId)
+        {
+            Console.WriteLine("DeleteProductAsync stared...");
+            var deleteProductResponse = await client.DeleteProductAsync(new DeleteProductRequest
+            {
+                ProductId = productId
+            });
+
+            Console.WriteLine("DeleteProductAsync Response: " + deleteProductResponse.Success.ToString());
+        }
+
+        private static async Task UpdateProductAsync(ProductProtoServiceClient client)
+        {
+            Console.WriteLine("UpdateProductAsync started...");
+            var updateProductResponse = await client.UpdateProductAsync(new UpdateProductRequest
+            {
+                Product = new ProductModel
+                {
+                    ProductId = 1,
+                    Name = "Red",
+                    Description = " New Red Phone Mi10T",
+                    Price = 699,
+                    Status = ProductStatus.Instock,
+                    CreatedTime = Timestamp.FromDateTime(DateTime.UtcNow)
+                }
+            });
+        }
+
+        private static async Task AddProductAsync(ProductProtoServiceClient client)
+        {
+            Console.WriteLine("AddProductAsync started...");
+            var addProductResponse = await client.AddProductAsync(
+                    new AddProductRequest
+                    {
+                        Product = new ProductModel
+                        {
+                            Name = "Red",
+                            Description = " New Red Phone Mi10T",
+                            Price = 699,
+                            Status = ProductStatus.Instock,
+                            CreatedTime = Timestamp.FromDateTime(DateTime.UtcNow)
+                        }
+                    }
+                ) ;
+
+            Console.WriteLine("AddProduct Response: " + addProductResponse.ToString());
+        }
+
+        static async Task GetProductAsync(ProductProtoServiceClient client, int productId)
         {
             // GetProductAsync
             Console.WriteLine("GetProductAsync started...");
             var response = await client.GetProductAsync(
                 new GetProductRequest
                 {
-                    ProductId = 1
+                    ProductId = productId
                 }
             );
 
