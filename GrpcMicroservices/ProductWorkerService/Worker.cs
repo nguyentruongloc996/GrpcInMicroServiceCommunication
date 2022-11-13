@@ -1,3 +1,4 @@
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -15,11 +16,13 @@ namespace ProductWorkerService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ProductFactory _productFactory;
 
-        public Worker(ILogger<Worker> logger, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IConfiguration configuration, ProductFactory productFactory)
         {
             _logger = logger;
             _configuration = configuration;
+            _productFactory = productFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -32,14 +35,10 @@ namespace ProductWorkerService
                 using var channel = GrpcChannel.ForAddress(serverUrl);
                 var client = new ProductProtoService.ProductProtoServiceClient(channel);
 
-                Console.WriteLine("GetProductAsync started...");
-                var response = await client.GetProductAsync(
-                        new GetProductRequest
-                        {
-                            ProductId = 1
-                        }
-                    );
-                Console.WriteLine(response.ToString());
+                _logger.LogInformation("AddProductAsync started...");
+                var addProductResponse = await client.AddProductAsync(await _productFactory.Generate());
+
+                _logger.LogInformation("AddProduct Response: " + addProductResponse.ToString());
 
                 var taskIntervalTime = _configuration.GetValue<int>("WorkerService:TaskInterval");
                 await Task.Delay(taskIntervalTime, stoppingToken);
