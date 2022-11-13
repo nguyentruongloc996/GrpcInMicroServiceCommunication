@@ -66,9 +66,12 @@ namespace ProductGrpc.Services
             var productModel = request.Product;
             var product = mapper.Map<Models.Product>(productModel);
 
+            // add the info into the database to get the ID auto generated.
             productsContext.Product.Add(product);
             await productsContext.SaveChangesAsync();
 
+            // Map back the product with the ID into the model to return
+            productModel = mapper.Map<ProductModel>(product);
             return productModel;
         }
 
