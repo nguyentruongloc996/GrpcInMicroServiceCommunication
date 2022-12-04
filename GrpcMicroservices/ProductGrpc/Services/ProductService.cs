@@ -69,6 +69,7 @@ namespace ProductGrpc.Services
             // add the info into the database to get the ID auto generated.
             productsContext.Product.Add(product);
             await productsContext.SaveChangesAsync();
+            logger.LogInformation($"Product successfully added: {product.ProductId}_{product.Name}");
 
             // Map back the product with the ID into the model to return
             productModel = mapper.Map<ProductModel>(product);

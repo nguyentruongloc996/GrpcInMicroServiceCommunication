@@ -15,3 +15,5 @@
 .vs/
 /GrpcMicroservices/ProductWorkerService/bin/Debug/net5.0
 /GrpcMicroservices/ProductWorkerService/obj
+/GrpcMicroservices/ShoppingCartGrpc/bin/Debug/net5.0
+/GrpcMicroservices/ShoppingCartGrpc/obj
