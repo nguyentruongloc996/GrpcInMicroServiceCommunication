@@ -15,12 +15,17 @@ namespace ShoppingCartGrpc.Services
         private readonly ShoppingCartContext shoppingCartDBbContext;
         private readonly IMapper mapper;
         private readonly ILogger<ShoppingCartService> logger;
+        private readonly DiscountService discountService;
 
-        public ShoppingCartService(ShoppingCartContext shoppingCartDBbContext, IMapper mapper, ILogger<ShoppingCartService> logger)
+        public ShoppingCartService(ShoppingCartContext shoppingCartDBbContext, 
+            IMapper mapper, 
+            ILogger<ShoppingCartService> logger, 
+            DiscountService discountService)
         {
             this.shoppingCartDBbContext = shoppingCartDBbContext;
             this.mapper = mapper;
             this.logger = logger;
+            this.discountService = discountService;
         }
 
         public override async Task<ShoppingCartModel> GetShoppingCart(GetShoppingCartRequest request, ServerCallContext context)
@@ -58,9 +63,46 @@ namespace ShoppingCartGrpc.Services
             return shoppingCartGrpcModel;
         }
 
-        public override Task<AddItemIntoShopingCartResponse> AddItemIntoShopingCart(IAsyncStreamReader<AddItemIntoShopingCartRequest> requestStream, ServerCallContext context)
+        public override async Task<AddItemIntoShopingCartResponse> AddItemIntoShopingCart(IAsyncStreamReader<AddItemIntoShopingCartRequest> requestStream, ServerCallContext context)
         {
-            return base.AddItemIntoShopingCart(requestStream, context);
+            // Get sc if exist or not
+            while (await requestStream.MoveNext())
+            {
+                var shoppingCart = await shoppingCartDBbContext.ShoppingCarts.
+                    FirstOrDefaultAsync(s => s.UserName == requestStream.Current.Username);
+                if (shoppingCart == null)
+                {
+                    throw new RpcException(new Status(StatusCode.NotFound,
+                        "Shopping Cart with Username={request.Username} does not exist"));
+                }
+                
+                // CHeck the item if exist in sc or not
+
+                var newAddedCartItem = mapper.Map<ShoppingCartItem>(requestStream.Current.NewCartItem);
+                var cartItem = shoppingCart.Items.FirstOrDefault(i => i.ProductId == newAddedCartItem.ProductId);
+                if (cartItem != null)
+                {
+                    cartItem.Quantity++;
+                }
+                else
+                {
+                    // grpc call discount service -- check discount and calculate the imtem last price
+                    var discount = await discountService.GetDiscount(requestStream.Current.DiscountCode);
+                    newAddedCartItem.Price -= discount.Amount;
+
+                    shoppingCart.Items.Add(newAddedCartItem);
+                }
+
+            }
+
+            var insertCount = await shoppingCartDBbContext.SaveChangesAsync();
+
+            var response = new AddItemIntoShopingCartResponse
+            {
+                Success = insertCount > 0,
+                InsertCount = insertCount,
+            };
+            return response;
         }
 
         public override async Task<RemoveItemIntoShoppingCartResponse> RemoveItemIntoShoppingCart(RemoveItemIntoShoppingCartRequest request, ServerCallContext context)
