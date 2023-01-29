@@ -5,7 +5,7 @@ namespace ShoppingCartGrpc.Mapper
 {
     public class ShoppingCartProfile : Profile
     {
-        protected ShoppingCartProfile()
+        public ShoppingCartProfile()
         {
             CreateMap<Models.ShoppingCart, ShoppingCartModel>().ReverseMap();
             CreateMap<Models.ShoppingCartItem, ShoppingCartItemModel>().ReverseMap();
