@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ShoppingCartGrpc.Data;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace ShoppingCartGrpc.Services
 {
+    [Authorize]
     public class ShoppingCartService : ShoppingCartProtoService.ShoppingCartProtoServiceBase
     {
         private readonly ShoppingCartContext shoppingCartDBbContext;
@@ -63,6 +65,7 @@ namespace ShoppingCartGrpc.Services
             return shoppingCartGrpcModel;
         }
 
+        [AllowAnonymous]
         public override async Task<AddItemIntoShopingCartResponse> AddItemIntoShopingCart(IAsyncStreamReader<AddItemIntoShopingCartRequest> requestStream, ServerCallContext context)
         {
             // Get sc if exist or not
@@ -105,6 +108,7 @@ namespace ShoppingCartGrpc.Services
             return response;
         }
 
+        [AllowAnonymous]
         public override async Task<RemoveItemIntoShoppingCartResponse> RemoveItemIntoShoppingCart(RemoveItemIntoShoppingCartRequest request, ServerCallContext context)
         {
             var shoppingCart = await shoppingCartDBbContext.ShoppingCarts
